@@ -42,7 +42,6 @@ import { get_opening_command, initialize_state } from '@/helpers/state'
 import { saveWindowState, StateFlags } from '@tauri-apps/plugin-window-state'
 import { renderString } from '@modrinth/utils'
 import { useFetch } from '@/helpers/fetch.js'
-import { check } from '@tauri-apps/plugin-updater'
 
 const themeStore = useTheming()
 
@@ -244,18 +243,7 @@ async function handleCommand(e) {
 }
 
 const updateAvailable = ref(false)
-async function checkUpdates() {
-  const update = await check()
-  console.log(update)
-  updateAvailable.value = !!update
-
-  setTimeout(
-    () => {
-      checkUpdates()
-    },
-    5 * 1000 * 60,
-  )
-}
+async function checkUpdates() { }
 </script>
 
 <template>
@@ -270,14 +258,9 @@ async function checkUpdates() {
           <RouterLink v-tooltip="'Home'" to="/" class="btn icon-only collapsed-button">
             <HomeIcon />
           </RouterLink>
-          <RouterLink
-            v-tooltip="'Browse'"
-            to="/browse/modpack"
-            class="btn icon-only collapsed-button"
-            :class="{
-              'router-link-active': isOnBrowse,
-            }"
-          >
+          <RouterLink v-tooltip="'Browse'" to="/browse/modpack" class="btn icon-only collapsed-button" :class="{
+            'router-link-active': isOnBrowse,
+          }">
             <SearchIcon />
           </RouterLink>
           <RouterLink v-tooltip="'Library'" to="/library" class="btn icon-only collapsed-button">
@@ -289,21 +272,12 @@ async function checkUpdates() {
         </div>
       </div>
       <div class="settings pages-list">
-        <button
-          v-if="updateAvailable"
-          v-tooltip="'Install update'"
-          class="btn btn-outline btn-primary icon-only collapsed-button"
-          @click="restartApp()"
-        >
+        <button v-if="updateAvailable" v-tooltip="'Install update'"
+          class="btn btn-outline btn-primary icon-only collapsed-button" @click="restartApp()">
           <DownloadIcon />
         </button>
-        <Button
-          v-tooltip="'Create profile'"
-          class="sleek-primary collapsed-button"
-          icon-only
-          :disabled="offline"
-          @click="() => $refs.installationModal.show()"
-        >
+        <Button v-tooltip="'Create profile'" class="sleek-primary collapsed-button" icon-only :disabled="offline"
+          @click="() => $refs.installationModal.show()">
           <PlusIcon />
         </Button>
         <RouterLink v-tooltip="'Settings'" to="/settings" class="btn icon-only collapsed-button">
@@ -331,11 +305,7 @@ async function checkUpdates() {
           <Button class="titlebar-button" icon-only @click="() => getCurrentWindow().minimize()">
             <MinimizeIcon />
           </Button>
-          <Button
-            class="titlebar-button"
-            icon-only
-            @click="() => getCurrentWindow().toggleMaximize()"
-          >
+          <Button class="titlebar-button" icon-only @click="() => getCurrentWindow().toggleMaximize()">
             <MaximizeIcon />
           </Button>
           <Button class="titlebar-button close" icon-only @click="handleClose">
@@ -344,10 +314,7 @@ async function checkUpdates() {
         </section>
       </div>
       <div class="router-view">
-        <ModrinthLoadingIndicator
-          offset-height="var(--appbar-height)"
-          offset-width="var(--sidebar-width)"
-        />
+        <ModrinthLoadingIndicator offset-height="var(--appbar-height)" offset-width="var(--sidebar-width)" />
         <RouterView v-slot="{ Component }">
           <template v-if="Component">
             <Suspense @pending="loading.startLoading()" @resolve="loading.stopLoading()">
@@ -400,6 +367,7 @@ async function checkUpdates() {
     height: 3.25rem;
 
     &.close {
+
       &:hover,
       &:active {
         background-color: var(--color-red);
