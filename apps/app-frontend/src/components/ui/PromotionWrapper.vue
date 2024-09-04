@@ -7,7 +7,7 @@ import { ChevronRightIcon } from '@modrinth/assets'
 import { init_ads_window } from '@/helpers/ads.js'
 import { listen } from '@tauri-apps/api/event'
 
-const showAd = ref(true)
+const showAd = ref(false)
 
 defineExpose({
   scroll() {
@@ -99,17 +99,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div
-    v-if="showAd"
-    ref="adsWrapper"
-    class="ad-parent relative mb-3 flex w-full justify-center rounded-2xl bg-bg-raised cursor-pointer"
-  >
+  <div v-if="showAd" ref="adsWrapper"
+    class="ad-parent relative mb-3 flex w-full justify-center rounded-2xl bg-bg-raised cursor-pointer">
     <div class="flex max-h-[250px] min-h-[250px] min-w-[300px] max-w-[300px] flex-col gap-4 p-6">
       <p class="m-0 text-2xl font-bold text-contrast">90% of ad revenue goes to creators</p>
-      <a
-        href="https://modrinth.com/plus"
-        class="mt-auto items-center gap-1 text-purple hover:underline"
-      >
+      <a href="https://modrinth.com/plus" class="mt-auto items-center gap-1 text-purple hover:underline">
         <span>
           Support creators and Modrinth ad-free with
           <span class="font-bold">Modrinth+</span>
