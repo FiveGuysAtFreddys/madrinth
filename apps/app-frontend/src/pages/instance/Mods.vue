@@ -50,6 +50,10 @@
       <DownloadIcon />
       Update all
     </Button>
+    <Button @click="compareModal.show()">
+      <TransferIcon />
+      Compare
+    </Button>
     <AddContentButton v-if="!isPackLocked" :instance="instance" />
   </Card>
   <Pagination
@@ -280,7 +284,7 @@
     v-if="projects.length > 0"
     :page="currentPage"
     :count="Math.ceil(search.length / 20)"
-    class="pagination-after"
+    class="pagination-before"
     :link-function="(page) => `?page=${page}`"
     @switch-page="switchPage"
   />
@@ -326,6 +330,45 @@
       </div>
     </div>
   </ModalWrapper>
+  <ModalWrapper ref="compareModal" header="Import mods from MODPACKNAME">
+    <div class="modal-body">
+      <Pagination
+        v-if="projects.length > 0"
+        :page="currentPage"
+        :count="Math.ceil(search.length / 8)"
+        class="pagination-before"
+        :link-function="(page) => `?page=${page}`"
+        @switch-page="switchPage"
+      />
+      <div class="table">
+        <div
+          v-for="mod in search.slice((currentPage - 1) * 8, currentPage * 8)"
+          :key="mod.file_name"
+          class="table-row compare"
+        >
+          <div class="table-cell table-text name-cell">
+            <div class="mod-content">
+              <Avatar :src="mod.icon" />
+              <span v-tooltip="`${mod.name}`" class="title">{{ mod.name }}</span>
+            </div>
+          </div>
+          <div class="table-cell table-text manage">
+            <Button
+              v-tooltip="'Add to current modpack'"
+              color="green"
+              icon-only
+              @click="console.log('hey')"
+            >
+              <PlusIcon />
+            </Button>
+          </div>
+        </div>
+      </div>
+      <div class="button-group push-right">
+        <Button color="green" @click="compareModal.hide()"> <CheckIcon /> Finish </Button>
+      </div>
+    </div>
+  </ModalWrapper>
   <ShareModalWrapper
     ref="shareModal"
     share-title="Sharing modpack content"
@@ -356,6 +399,8 @@ import {
   EyeOffIcon,
   CodeIcon,
   DownloadIcon,
+  TransferIcon,
+  PlusIcon,
 } from '@modrinth/assets'
 import {
   Pagination,
@@ -419,6 +464,8 @@ const props = defineProps({
   },
 })
 
+console.log(props.instance)
+
 const unlistenProfiles = await profile_listener(async (event) => {
   if (
     event.profile_path_id === props.instance.path &&
@@ -442,6 +489,7 @@ const canUpdatePack = computed(() => {
   return props.instance.linked_data.version_id !== props.versions[0].id
 })
 const exportModal = ref(null)
+const compareModal = ref(null)
 
 const projects = ref([])
 const selectionMap = ref(new Map())
@@ -921,6 +969,14 @@ onUnmounted(() => {
       gap: var(--gap-md);
     }
   }
+
+  &.compare {
+    grid-template-columns: 1fr min-content;
+
+    .name-cell {
+      padding-left: 1rem;
+    }
+  }
 }
 
 .static {
@@ -1145,6 +1201,7 @@ onUnmounted(() => {
     }
   }
 }
+
 .empty-prompt {
   display: flex;
   flex-direction: column;
