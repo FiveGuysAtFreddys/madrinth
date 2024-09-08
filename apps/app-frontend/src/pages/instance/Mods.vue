@@ -50,9 +50,9 @@
       <DownloadIcon />
       Update all
     </Button>
-    <Button @click="compareModal.show()">
+    <Button v-if="!isPackLocked" @click="compareModal.show()">
       <TransferIcon />
-      Compare
+      Import
     </Button>
     <AddContentButton v-if="!isPackLocked" :instance="instance" />
   </Card>
@@ -330,45 +330,11 @@
       </div>
     </div>
   </ModalWrapper>
-  <ModalWrapper ref="compareModal" header="Import mods from MODPACKNAME">
-    <div class="modal-body">
-      <Pagination
-        v-if="projects.length > 0"
-        :page="currentPage"
-        :count="Math.ceil(search.length / 8)"
-        class="pagination-before"
-        :link-function="(page) => `?page=${page}`"
-        @switch-page="switchPage"
-      />
-      <div class="table">
-        <div
-          v-for="mod in search.slice((currentPage - 1) * 8, currentPage * 8)"
-          :key="mod.file_name"
-          class="table-row compare"
-        >
-          <div class="table-cell table-text name-cell">
-            <div class="mod-content">
-              <Avatar :src="mod.icon" />
-              <span v-tooltip="`${mod.name}`" class="title">{{ mod.name }}</span>
-            </div>
-          </div>
-          <div class="table-cell table-text manage">
-            <Button
-              v-tooltip="'Add to current modpack'"
-              color="green"
-              icon-only
-              @click="console.log('hey')"
-            >
-              <PlusIcon />
-            </Button>
-          </div>
-        </div>
-      </div>
-      <div class="button-group push-right">
-        <Button color="green" @click="compareModal.hide()"> <CheckIcon /> Finish </Button>
-      </div>
-    </div>
-  </ModalWrapper>
+  <CompareModal
+    ref="compareModal"
+    header="Import mods"
+    :instance="instance"
+  ></CompareModal>
   <ShareModalWrapper
     ref="shareModal"
     share-title="Sharing modpack content"
@@ -400,7 +366,6 @@ import {
   CodeIcon,
   DownloadIcon,
   TransferIcon,
-  PlusIcon,
 } from '@modrinth/assets'
 import {
   Pagination,
@@ -437,6 +402,7 @@ import {
 } from '@/helpers/cache.js'
 import { profile_listener } from '@/helpers/events.js'
 import ModalWrapper from '@/components/ui/modal/ModalWrapper.vue'
+import CompareModal from '@/components/ui/modal/CompareModal.vue'
 import ShareModalWrapper from '@/components/ui/modal/ShareModalWrapper.vue'
 
 const props = defineProps({
@@ -463,8 +429,6 @@ const props = defineProps({
     required: true,
   },
 })
-
-console.log(props.instance)
 
 const unlistenProfiles = await profile_listener(async (event) => {
   if (
