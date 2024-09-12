@@ -27,6 +27,9 @@ jobs:
         with:
           components: rustfmt, clippy
 
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --git https://github.com/modrinth/tauri.git --rev 5e2942876c2266594ed1db516c1d9975c873c36a
+
       - name: Setup rust cache
         uses: actions/cache@v4
         with:
@@ -45,9 +48,13 @@ jobs:
             !target/release/bundle/*/*.deb
             !target/release/bundle/*/*.rpm
 
-            !target/release/bundle/*/*.msi
-            !target/release/bundle/*/*.msi.zip
-            !target/release/bundle/*/*.msi.zip.sig
+            !target/release/bundle/msi/*.msi
+            !target/release/bundle/msi/*.msi.zip
+            !target/release/bundle/msi/*.msi.zip.sig
+            
+            !target/release/bundle/nsis/*.exe
+            !target/release/bundle/nsis/*.nsis.zip
+            !target/release/bundle/nsis/*.nsis.zip.sig
           key: ${{ runner.os }}-rust-target-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-rust-target-
@@ -117,6 +124,10 @@ jobs:
             target/release/bundle/*/*.deb
             target/release/bundle/*/*.rpm
 
-            target/release/bundle/*/*.msi
-            target/release/bundle/*/*.msi.zip
-            target/release/bundle/*/*.msi.zip.sig
+            target/release/bundle/msi/*.msi
+            target/release/bundle/msi/*.msi.zip
+            target/release/bundle/msi/*.msi.zip.sig
+            
+            target/release/bundle/nsis/*.exe
+            target/release/bundle/nsis/*.nsis.zip
+            target/release/bundle/nsis/*.nsis.zip.sig
