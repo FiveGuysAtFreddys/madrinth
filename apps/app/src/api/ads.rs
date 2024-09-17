@@ -108,11 +108,6 @@ pub async fn scroll_ads_window<R: Runtime>(
 pub async fn record_ads_click<R: Runtime>(
     app: tauri::AppHandle<R>,
 ) -> crate::api::Result<()> {
-    let state = app.state::<RwLock<AdsState>>();
-
-    let mut state = state.write().await;
-    state.last_click = Some(Instant::now());
-
     Ok(())
 }
 
@@ -122,24 +117,5 @@ pub async fn open_link<R: Runtime>(
     path: String,
     origin: String,
 ) -> crate::api::Result<()> {
-    let state = app.state::<RwLock<AdsState>>();
-    let mut state = state.write().await;
-
-    if url::Url::parse(&path).is_ok()
-        && !state.malicious_origins.contains(&origin)
-    {
-        if let Some(last_click) = state.last_click {
-            if last_click.elapsed() < Duration::from_millis(100) {
-                let _ = app.shell().open(&path, None);
-                state.last_click = None;
-
-                return Ok(());
-            }
-        }
-    }
-
-    tracing::info!("Malicious click: {path} origin {origin}");
-    state.malicious_origins.insert(origin);
-
     Ok(())
 }
